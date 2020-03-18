@@ -5,7 +5,7 @@ This project is endpoint of my education via MIPT and Mail.ru group course at Co
 
 First part is the client for sending metrics
 It's synchronous app for sending metrics in to the server or receiving them from it.
-Client can determine right response, handles it and returns notification about successful operationor. If response is wrong
+Client can determine right response, handles it and returns notification about successful operation. If response is wrong
 client raises ClientError
 
 Second part is the server part.
