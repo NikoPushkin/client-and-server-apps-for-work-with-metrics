@@ -10,6 +10,6 @@ client raises ClientError
 
 Second part is the server part.
 Server provides opportunities for a safekeeping of metrics in frames of current session and sending them on request from clients.
-Server is asynchronous and supports work with several clients at a time.
+Server is asynchronous bases on Asyncio and supports work with several clients at a time.
 
 Conversation between these apps defined by rigorous protocol of interaction
