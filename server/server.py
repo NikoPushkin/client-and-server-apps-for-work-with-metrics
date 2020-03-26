@@ -7,7 +7,8 @@ class ClientServerProtocol(asyncio.Protocol):
 
     def connection_made(self, transport):
         self.transport = transport
-
+    
+    # work with metric with same timestamp
     @staticmethod
     def timestamp_check(timestamp, data):
         for i in ClientServerProtocol.data_list:
@@ -21,7 +22,9 @@ class ClientServerProtocol(asyncio.Protocol):
 
     @staticmethod
     def put(request):
+        # underline necesarry data for adding to the rep
         data = request[1:]
+        # this check means that it is impossible to add 2 metric with same name         # at a time 
         try:
             data = [
                     data[0], str(float(data[1])), str(int(data[2]))
@@ -32,19 +35,21 @@ class ClientServerProtocol(asyncio.Protocol):
         except:
             return 'error\nwrong command\n\n'
 
+    #prepare answer for sending to the client
     @staticmethod
     def get(request):
         necesarry_metrics = []
-
+        
+        # make list of metrics
         for i in ClientServerProtocol.data_list:
             if request[1] == '*':
                 necesarry_metrics.append(i)
             elif i[0] == request[1]:
                 necesarry_metrics.append(i)
-
+        # there are not required metrics
         if necesarry_metrics == []:
             return 'ok\n\n'
-
+        # prepare string for sending
         final_str  = ''
         for i in necesarry_metrics:
             final_str += ' '.join(i) + '\n'
@@ -52,21 +57,23 @@ class ClientServerProtocol(asyncio.Protocol):
         answer = 'ok\n{}\n'.format(final_str)
         return answer
 
+    # check format of request and push in to the corresponding method
     @staticmethod
     def process_data(data):
         full_request = data.split('\n')
 
         if len(full_request) == 2 and full_request[0] != '':
+
+            # underline type of request get or put
             necesarry_method = full_request[0].split()[0]
             request = full_request[0].split()
-
+            # determine necesarry method -- get or put or return error
             if necesarry_method == 'get' and len(request) == 2:
                 return ClientServerProtocol.get(request)
             elif necesarry_method == 'put' and len(request) == 4:
                 return ClientServerProtocol.put(request)
             else:
                 return 'error\nwrong command\n\n'
-
         else:
             return 'error\nwrong command\n\n'
 
@@ -74,7 +81,7 @@ class ClientServerProtocol(asyncio.Protocol):
         resp = ClientServerProtocol.process_data(data.decode())
         self.transport.write(resp.encode())
 
-
+# run async server and start to work with this
 def run_server(host, port):
     loop = asyncio.get_event_loop()
     coro = loop.create_server(
